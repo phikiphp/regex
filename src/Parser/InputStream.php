@@ -28,7 +28,7 @@ class InputStream
     {
         return in_array($this->peek(), $char, true);
     }
-    
+
     public function current(): ?string
     {
         return $this->input[$this->position] ?? null;

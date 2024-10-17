@@ -81,8 +81,8 @@ it('can parse a character class with a simple range', function () {
 
 function parse(string $pattern): Pattern
 {
-    $lexer = new Lexer();
-    $parser = new Parser();
+    $lexer = new Lexer;
+    $parser = new Parser;
 
     return $parser->parse($lexer->tokenise($pattern));
 }

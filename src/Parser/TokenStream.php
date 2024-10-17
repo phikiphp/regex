@@ -37,11 +37,11 @@ class TokenStream
         $token = $this->current();
 
         if ($token === null) {
-            throw new Exception('Unexpected end of input, expected ' . $kind->name);
+            throw new Exception('Unexpected end of input, expected '.$kind->name);
         }
 
         if ($token->kind !== $kind) {
-            throw new Exception('Unexpected token: ' . $token->kind->name . ', expected ' . $kind->name);
+            throw new Exception('Unexpected token: '.$token->kind->name.', expected '.$kind->name);
         }
 
         $this->next();

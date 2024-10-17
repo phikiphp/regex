@@ -4,7 +4,7 @@ use Phiki\Regex\Parser\Lexer;
 use Phiki\Regex\Parser\TokenKind;
 
 it('produces valid tokens', function () {
-    $lexer = new Lexer();
+    $lexer = new Lexer;
     $tokens = $lexer->tokenise('(){}[].*+$^|?,/=:\\$abc');
 
     expect($tokens)
@@ -30,6 +30,6 @@ it('produces valid tokens', function () {
             fn ($token) => $token->kind->toBe(TokenKind::EscapeSequence),
             fn ($token) => $token->kind->toBe(TokenKind::Char),
             fn ($token) => $token->kind->toBe(TokenKind::Char),
-            fn($token) => $token->kind->toBe(TokenKind::Char),
+            fn ($token) => $token->kind->toBe(TokenKind::Char),
         );
 });

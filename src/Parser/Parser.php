@@ -34,7 +34,7 @@ class Parser
     {
         $atom = $this->atom($stream);
         $quantifier = $this->quantifier($stream);
-        
+
         return new Element($atom, $quantifier);
     }
 
@@ -45,7 +45,7 @@ class Parser
         if ($token->kind === TokenKind::LeftParen) {
             return $this->group($stream);
         }
-        
+
         if ($token->kind === TokenKind::LeftBracket) {
             return $this->characterClass($stream);
         }
@@ -53,12 +53,12 @@ class Parser
         if ($token->kind === TokenKind::Period) {
             return $this->period($stream);
         }
-        
+
         if ($token->kind === TokenKind::Char) {
             return $this->char($stream);
         }
 
-        throw new Exception('Unexpected token: ' . $token->kind->name);
+        throw new Exception('Unexpected token: '.$token->kind->name);
     }
 
     protected function group(TokenStream $stream): Atom
@@ -67,7 +67,7 @@ class Parser
 
         $stream->expect(TokenKind::LeftParen);
         $elements = [];
-        
+
         while (! $stream->isEof() && $stream->current()->kind !== TokenKind::RightParen) {
             $elements[] = $this->element($stream);
         }
@@ -123,7 +123,7 @@ class Parser
     {
         $stream->next();
 
-        return new Period();
+        return new Period;
     }
 
     protected function char(TokenStream $stream): Atom
@@ -140,7 +140,7 @@ class Parser
         if ($stream->isEof()) {
             return null;
         }
-        
+
         if (! $stream->isAny(TokenKind::Question, TokenKind::Asterisk, TokenKind::Plus, TokenKind::LeftCurly)) {
             return null;
         }

@@ -197,6 +197,14 @@ it('can parse a pattern with simple ++ (one or more) (possessive) quantifier', f
     expect($pattern->elements[0]->quantifier->possessive)->toBeTrue();
 });
 
+it('can parse a pattern with an alternation', function () {
+    $pattern = parse('a|b');
+
+    expect($pattern->elements)->toHaveCount(2);
+    expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
+    expect($pattern->elements[1]->atom)->toBeInstanceOf(LiteralCharacter::class);
+});
+
 function parse(string $pattern): Pattern
 {
     $lexer = new Lexer;

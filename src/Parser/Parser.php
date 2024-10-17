@@ -30,6 +30,10 @@ class Parser
         $elements = [];
 
         while (! $stream->isEof()) {
+            if (count($elements) >= 1) {
+                $stream->expect(TokenKind::Pipe);
+            }
+
             $elements[] = $this->element($stream);
         }
 

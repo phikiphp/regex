@@ -14,6 +14,10 @@ use Phiki\Regex\Ast\CharacterClassMember;
 use Phiki\Regex\Ast\Element;
 use Phiki\Regex\Ast\Pattern;
 use Phiki\Regex\Ast\Quantifier;
+use Phiki\Regex\Ast\Quantifiers\Between;
+use Phiki\Regex\Ast\Quantifiers\Exactly;
+use Phiki\Regex\Ast\Quantifiers\ExactlyOrMore;
+use Phiki\Regex\Ast\Quantifiers\ZeroOrOne;
 
 class Parser
 {
@@ -33,6 +37,8 @@ class Parser
     protected function element(TokenStream $stream): Element
     {
         $atom = $this->atom($stream);
+
+        // FIXME: Make sure $atom is quantifiable.
         $quantifier = $this->quantifier($stream);
 
         return new Element($atom, $quantifier);
@@ -145,6 +151,69 @@ class Parser
             return null;
         }
 
-        dd();
+        if ($stream->is(TokenKind::LeftCurly)) {
+            return $this->curlyBracesQuantifier($stream);
+        }
+
+        $token = $stream->current()->kind;
+
+        $stream->next();
+
+        $modifier = $stream->isAny(TokenKind::Question, TokenKind::Plus) ? $stream->expectAny(TokenKind::Question, TokenKind::Plus)->kind : null;
+
+        $quantifier = match ([$token, $modifier]) {
+            [TokenKind::Question, null] => new ZeroOrOne(),
+            [TokenKind::Question, TokenKind::Question] => new ZeroOrOne(greedy: false, lazy: true),
+            [TokenKind::Question, TokenKind::Plus] => new ZeroOrOne(greedy: false, possessive: true),
+            default => dd($token, $modifier),
+        };
+
+        return $quantifier;
+    }
+
+    protected function curlyBracesQuantifier(TokenStream $stream): Exactly|ExactlyOrMore|Between
+    {
+        $stream->expect(TokenKind::LeftCurly);
+
+        $min = $this->integer($stream);
+
+        if ($stream->is(TokenKind::RightCurly)) {
+            $stream->next();
+
+            return new Exactly($min);
+        }
+
+        $stream->expect(TokenKind::Comma);
+
+        if ($stream->is(TokenKind::RightCurly)) {
+            $stream->next();
+
+            return new ExactlyOrMore($min);
+        }
+
+        $max = $this->integer($stream);
+
+        $stream->expect(TokenKind::RightCurly);
+
+        return new Between($min, $max);
+    }
+
+    protected function integer(TokenStream $stream): int
+    {
+        $char = $stream->expect(TokenKind::Char)->value;
+
+        if (! ctype_digit($char)) {
+            throw new Exception('Expected digit, got: '.$char);
+        }
+
+        if ($stream->current()?->kind !== TokenKind::Char) {
+            return (int) $char;
+        }
+
+        while ($stream->current()?->kind === TokenKind::Char && ctype_digit($stream->current()?->value)) {
+            $char .= $stream->expect(TokenKind::Char)->value;
+        }
+
+        return (int) $char;
     }
 }

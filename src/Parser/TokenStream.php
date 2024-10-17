@@ -32,6 +32,23 @@ class TokenStream
         $this->position++;
     }
 
+    public function expectAny(TokenKind ...$kinds): Token
+    {
+        $token = $this->current();
+
+        if ($token === null) {
+            throw new Exception('Unexpected end of input, expected '.implode(' or ', array_map(fn ($kind) => $kind->name, $kinds)));
+        }
+
+        if (!in_array($token->kind, $kinds, true)) {
+            throw new Exception('Unexpected token: '.$token->kind->name.', expected '.implode(' or ', array_map(fn ($kind) => $kind->name, $kinds)));
+        }
+
+        $this->next();
+
+        return $token;
+    }
+
     public function expect(TokenKind $kind): Token
     {
         $token = $this->current();

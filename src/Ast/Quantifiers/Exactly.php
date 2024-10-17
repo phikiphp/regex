@@ -7,7 +7,7 @@ use Phiki\Regex\Ast\Quantifier;
 class Exactly implements Quantifier
 {
     public function __construct(
-        public int $count,
+        public int $n,
         public bool $possessive = false,
     ) {}
 }

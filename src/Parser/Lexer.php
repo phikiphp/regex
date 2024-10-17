@@ -5,6 +5,12 @@ namespace Phiki\Regex\Parser;
 class Lexer
 {
     /** @return Token[] */
+    public function tokenize(string $input): array
+    {
+        return $this->tokenise($input);
+    }
+
+    /** @return Token[] */
     public function tokenise(string $input): array
     {
         $stream = new InputStream($input);

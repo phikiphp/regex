@@ -2,7 +2,9 @@
 
 namespace Phiki\Regex\Ast\Quantifiers;
 
+use Phiki\Regex\Ast\Atom;
 use Phiki\Regex\Ast\Quantifier;
+use Phiki\Regex\Evaluator\State;
 
 class ZeroOrOne implements Quantifier
 {
@@ -11,4 +13,9 @@ class ZeroOrOne implements Quantifier
         public bool $lazy = false,
         public bool $possessive = false,
     ) {}
+
+    public function visit(State $state, Atom $atom): bool
+    {
+        dd();
+    }
 }

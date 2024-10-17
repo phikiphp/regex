@@ -3,6 +3,7 @@
 namespace Phiki\Regex\Ast\Atoms;
 
 use Phiki\Regex\Ast\Atom;
+use Phiki\Regex\Evaluator\State;
 
 class CharacterClass implements Atom
 {
@@ -11,4 +12,9 @@ class CharacterClass implements Atom
         public array $members,
         public bool $negated = false,
     ) {}
+
+    public function visit(State $state): bool
+    {
+        dd();
+    }
 }

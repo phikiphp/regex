@@ -2,7 +2,7 @@
 
 namespace Phiki\Regex\Ast;
 
-interface Atom
+interface Atom extends Node
 {
     //
 }

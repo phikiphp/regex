@@ -2,7 +2,7 @@
 
 namespace Phiki\Regex\Ast;
 
-interface CharacterClassMember
+interface CharacterClassMember extends Node
 {
     //
 }

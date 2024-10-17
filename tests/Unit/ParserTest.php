@@ -9,6 +9,8 @@ use Phiki\Regex\Ast\Pattern;
 use Phiki\Regex\Ast\Quantifiers\Between;
 use Phiki\Regex\Ast\Quantifiers\Exactly;
 use Phiki\Regex\Ast\Quantifiers\ExactlyOrMore;
+use Phiki\Regex\Ast\Quantifiers\OneOrMore;
+use Phiki\Regex\Ast\Quantifiers\ZeroOrMore;
 use Phiki\Regex\Ast\Quantifiers\ZeroOrOne;
 use Phiki\Regex\Parser\Lexer;
 use Phiki\Regex\Parser\Parser;
@@ -111,7 +113,7 @@ it('can parse a pattern with an N-M quantifier', function () {
     expect($pattern->elements[0]->quantifier->max)->toBe(5);
 });
 
-it('can parse a pattern with a simple ? quantifier', function () {
+it('can parse a pattern with a simple ? (zero or one) quantifier', function () {
     $pattern = parse('a?');
 
     expect($pattern->elements)->toHaveCount(1);
@@ -119,7 +121,7 @@ it('can parse a pattern with a simple ? quantifier', function () {
     expect($pattern->elements[0]->quantifier)->toBeInstanceOf(ZeroOrOne::class);
 });
 
-it('can parse a pattern with a ?? (lazy) quantifier', function () {
+it('can parse a pattern with a ?? (zero or one) (lazy) quantifier', function () {
     $pattern = parse('a??');
 
     expect($pattern->elements)->toHaveCount(1);
@@ -129,12 +131,68 @@ it('can parse a pattern with a ?? (lazy) quantifier', function () {
     expect($pattern->elements[0]->quantifier->lazy)->toBeTrue();
 });
 
-it('can parse a pattern with a ?+ (possessive) quantifier', function () {
+it('can parse a pattern with a ?+ (zero or one) (possessive) quantifier', function () {
     $pattern = parse('a?+');
 
     expect($pattern->elements)->toHaveCount(1);
     expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
     expect($pattern->elements[0]->quantifier)->toBeInstanceOf(ZeroOrOne::class);
+    expect($pattern->elements[0]->quantifier->greedy)->toBeFalse();
+    expect($pattern->elements[0]->quantifier->possessive)->toBeTrue();
+});
+
+it('can parse a pattern with simple * (zero or more) quantifier', function () {
+    $pattern = parse('a*');
+
+    expect($pattern->elements)->toHaveCount(1);
+    expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
+    expect($pattern->elements[0]->quantifier)->toBeInstanceOf(ZeroOrMore::class);
+});
+
+it('can parse a pattern with simple *? (zero or more) (lazy) quantifier', function () {
+    $pattern = parse('a*?');
+
+    expect($pattern->elements)->toHaveCount(1);
+    expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
+    expect($pattern->elements[0]->quantifier)->toBeInstanceOf(ZeroOrMore::class);
+    expect($pattern->elements[0]->quantifier->greedy)->toBeFalse();
+    expect($pattern->elements[0]->quantifier->lazy)->toBeTrue();
+});
+
+it('can parse a pattern with simple *+ (zero or more) (possessive) quantifier', function () {
+    $pattern = parse('a*+');
+
+    expect($pattern->elements)->toHaveCount(1);
+    expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
+    expect($pattern->elements[0]->quantifier)->toBeInstanceOf(ZeroOrMore::class);
+    expect($pattern->elements[0]->quantifier->greedy)->toBeFalse();
+    expect($pattern->elements[0]->quantifier->possessive)->toBeTrue();
+});
+
+it('can parse a pattern with simple + (one or more) quantifier', function () {
+    $pattern = parse('a+');
+
+    expect($pattern->elements)->toHaveCount(1);
+    expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
+    expect($pattern->elements[0]->quantifier)->toBeInstanceOf(OneOrMore::class);
+});
+
+it('can parse a pattern with simple +? (one or more) (lazy) quantifier', function () {
+    $pattern = parse('a+?');
+
+    expect($pattern->elements)->toHaveCount(1);
+    expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
+    expect($pattern->elements[0]->quantifier)->toBeInstanceOf(OneOrMore::class);
+    expect($pattern->elements[0]->quantifier->greedy)->toBeFalse();
+    expect($pattern->elements[0]->quantifier->lazy)->toBeTrue();
+});
+
+it('can parse a pattern with simple ++ (one or more) (possessive) quantifier', function () {
+    $pattern = parse('a++');
+
+    expect($pattern->elements)->toHaveCount(1);
+    expect($pattern->elements[0]->atom)->toBeInstanceOf(LiteralCharacter::class);
+    expect($pattern->elements[0]->quantifier)->toBeInstanceOf(OneOrMore::class);
     expect($pattern->elements[0]->quantifier->greedy)->toBeFalse();
     expect($pattern->elements[0]->quantifier->possessive)->toBeTrue();
 });

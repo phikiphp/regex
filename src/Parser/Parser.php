@@ -17,6 +17,8 @@ use Phiki\Regex\Ast\Quantifier;
 use Phiki\Regex\Ast\Quantifiers\Between;
 use Phiki\Regex\Ast\Quantifiers\Exactly;
 use Phiki\Regex\Ast\Quantifiers\ExactlyOrMore;
+use Phiki\Regex\Ast\Quantifiers\OneOrMore;
+use Phiki\Regex\Ast\Quantifiers\ZeroOrMore;
 use Phiki\Regex\Ast\Quantifiers\ZeroOrOne;
 
 class Parser
@@ -165,6 +167,12 @@ class Parser
             [TokenKind::Question, null] => new ZeroOrOne(),
             [TokenKind::Question, TokenKind::Question] => new ZeroOrOne(greedy: false, lazy: true),
             [TokenKind::Question, TokenKind::Plus] => new ZeroOrOne(greedy: false, possessive: true),
+            [TokenKind::Asterisk, null] => new ZeroOrMore(),
+            [TokenKind::Asterisk, TokenKind::Question] => new ZeroOrMore(greedy: false, lazy: true),
+            [TokenKind::Asterisk, TokenKind::Plus] => new ZeroOrMore(greedy: false, possessive: true),
+            [TokenKind::Plus, null] => new OneOrMore(),
+            [TokenKind::Plus, TokenKind::Question] => new OneOrMore(greedy: false, lazy: true),
+            [TokenKind::Plus, TokenKind::Plus] => new OneOrMore(greedy: false, possessive: true),
             default => dd($token, $modifier),
         };
 

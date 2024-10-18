@@ -10,11 +10,18 @@ class TokenStream
 
     protected int $length = 0;
 
+    protected int $group = 1;
+
     /** @param array<Token> $tokens */
     public function __construct(
         protected readonly array $tokens,
     ) {
         $this->length = count($tokens);
+    }
+
+    public function groupN(): int
+    {
+        return $this->group++;
     }
 
     public function current(): ?Token

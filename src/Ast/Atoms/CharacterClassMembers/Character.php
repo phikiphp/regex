@@ -13,6 +13,6 @@ class Character implements CharacterClassMember
 
     public function visit(State $state): bool
     {
-        dd();
+        return $state->current() === $this->character;
     }
 }

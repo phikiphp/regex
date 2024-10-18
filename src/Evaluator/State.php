@@ -9,13 +9,23 @@ final class State
     protected array $backrefs = [];
 
     public function __construct(
-        protected string $subject,
+        public readonly string $subject,
         protected int $position = 0,
     ) {}
 
     public function pushBackref(int $index, string $value): void
     {
         $this->backrefs[$index] = $value;
+    }
+
+    public function pushGroup(int|string $key, string $value): void
+    {
+        $this->captures[$key] = $value;
+    }
+
+    public function setRootCapture(string $value): void
+    {
+        $this->captures = [0 => $value] + $this->captures;
     }
 
     public function setCapture(int $index, string $value): void

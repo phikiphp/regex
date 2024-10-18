@@ -4,6 +4,7 @@ namespace Phiki\Regex\Ast\Atoms;
 
 use Phiki\Regex\Ast\Atom;
 use Phiki\Regex\Evaluator\State;
+use Phiki\Regex\Ast\CharacterClassMember;
 
 class CharacterClass implements Atom
 {
@@ -15,6 +16,20 @@ class CharacterClass implements Atom
 
     public function visit(State $state): bool
     {
-        dd();
+        foreach ($this->members as $member) {
+            $matched = $member->visit($state);
+
+            if ($this->negated) {
+                $matched = ! $matched;
+            }
+
+            if ($matched) {
+                $state->advance();
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

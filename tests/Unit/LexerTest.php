@@ -3,6 +3,8 @@
 use Phiki\Regex\Parser\Lexer;
 use Phiki\Regex\Parser\TokenKind;
 
+pest()->group('lexer');
+
 it('produces valid tokens', function () {
     $lexer = new Lexer;
     $tokens = $lexer->tokenise('(){}[].*+$^|?,/=:\\$abc');

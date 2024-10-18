@@ -4,20 +4,20 @@ namespace Phiki\Regex\Ast;
 
 use Phiki\Regex\Evaluator\State;
 
-class Pattern implements Node
+class Alternation implements Node
 {
-    /** @param Alternation[] $elements */
     public function __construct(
-        public array $alternations,
+        public array $elements,
     ) {}
 
     public function visit(State $state): bool
     {
         $matched = false;
 
-        foreach ($this->alternations as $alternation) {
-            if ($alternation->visit($state)) {
-                $matched = true;
+        foreach ($this->elements as $element) {
+            $matched = $element->visit($state);
+
+            if (! $matched) {
                 break;
             }
         }

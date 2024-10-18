@@ -16,9 +16,15 @@ final class Evaluator
     private function match(Pattern $pattern, State $state): array
     {
         while (! $state->isEof()) {
+            $position = $state->position();
+
             if (! $pattern->visit($state)) {
                 $state->advance();
+
+                continue;
             }
+
+            $state->setRootCapture(substr($state->subject, $position, $state->position() - $position));
 
             break;
         }

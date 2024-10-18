@@ -9,6 +9,12 @@ class Period implements Atom
 {
     public function visit(State $state): bool
     {
-        dd();
+        if ($state->current() !== "\n") {
+            $state->advance();
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -3,6 +3,7 @@
 namespace Phiki\Regex\Parser;
 
 use Exception;
+use Phiki\Regex\Ast\Alternation;
 use Phiki\Regex\Ast\Atom;
 use Phiki\Regex\Ast\Atoms\CharacterClass;
 use Phiki\Regex\Ast\Atoms\CharacterClassMembers\Character;
@@ -27,17 +28,28 @@ class Parser
     public function parse(array $tokens): Pattern
     {
         $stream = new TokenStream($tokens);
-        $elements = [];
+        $alternations = [];
 
         while (! $stream->isEof()) {
-            if (count($elements) >= 1) {
+            if (count($alternations) >= 1) {
                 $stream->expect(TokenKind::Pipe);
             }
 
+            $alternations[] = $this->alternations($stream);
+        }
+
+        return new Pattern($alternations);
+    }
+
+    protected function alternations(TokenStream $stream): Alternation
+    {
+        $elements = [];
+
+        while (! $stream->isEof() && $stream->current()->kind !== TokenKind::Pipe) {
             $elements[] = $this->element($stream);
         }
 
-        return new Pattern($elements);
+        return new Alternation($elements);
     }
 
     protected function element(TokenStream $stream): Element
@@ -78,15 +90,27 @@ class Parser
         // FIXME: Add group type parsing.
 
         $stream->expect(TokenKind::LeftParen);
-        $elements = [];
+        $alternations = [];
 
         while (! $stream->isEof() && $stream->current()->kind !== TokenKind::RightParen) {
-            $elements[] = $this->element($stream);
+            if (count($alternations) >= 1) {
+                $stream->expect(TokenKind::Pipe);
+            }
+
+            $elements = [];
+
+            while (! $stream->isEof() && !$stream->isAny(TokenKind::Pipe, TokenKind::RightParen)) {
+                $elements[] = $this->element($stream);
+            }
+
+            $alternations[] = new Alternation($elements);
         }
 
         $stream->expect(TokenKind::RightParen);
 
-        return new Group(new Pattern($elements));
+        $n = $stream->groupN();
+
+        return new Group(new Pattern($alternations), $n);
     }
 
     protected function characterClass(TokenStream $stream): Atom

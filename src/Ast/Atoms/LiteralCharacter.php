@@ -13,6 +13,12 @@ class LiteralCharacter implements Atom
 
     public function visit(State $state): bool
     {
-        dd();
+        if ($state->current() === $this->character) {
+            $state->advance();
+
+            return true;
+        }
+
+        return false;
     }
 }
